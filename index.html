@@ -570,45 +570,32 @@
     );
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-    // Waitlist form — Mailchimp JSONP
-    function handleSubmit(e) {
+    // Waitlist form — Vercel serverless
+    async function handleSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('emailInput').value.trim();
       const btn = document.querySelector('.waitlist-submit');
       btn.disabled = true;
       btn.textContent = 'Joining…';
 
-      const callbackName = 'mcCallback_' + Date.now();
-      const url = 'https://uldrix.us3.list-manage.com/subscribe/post-json'
-        + '?u=c79587e844c834ebb4997feb1&id=7ca33656ef'
-        + '&EMAIL=' + encodeURIComponent(email)
-        + '&c=' + callbackName;
-
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        document.head.removeChild(script);
-        const form = document.getElementById('waitlistForm');
-        const msg = document.getElementById('successMsg');
-        if (data.result === 'success' || (data.msg && data.msg.toLowerCase().includes('already subscribed'))) {
-          form.style.display = 'none';
-          msg.style.display = 'block';
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('waitlistForm').style.display = 'none';
+          document.getElementById('successMsg').style.display = 'block';
         } else {
-          btn.disabled = false;
-          btn.textContent = 'Join Waitlist';
-          alert(data.msg ? data.msg.replace(/<[^>]+>/g, '') : 'Something went wrong. Please try again.');
+          throw new Error(data.error || 'Something went wrong.');
         }
-      };
-
-      const script = document.createElement('script');
-      script.src = url;
-      script.onerror = function() {
-        delete window[callbackName];
-        document.head.removeChild(script);
+      } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Join Waitlist';
-        alert('Could not connect. Please try again.');
-      };
-      document.head.appendChild(script);
+        alert(err.message || 'Could not connect. Please try again.');
+      }
     }
   </script>
 </body>
