@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uldrix — The Last AI Voice You'll Ever Need</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --gray-900: #111;
+      --gray-600: #4b4b4b;
+      --gray-400: #888;
+      --gray-200: #e5e5e5;
+      --gray-100: #f5f5f5;
+      --white: #fff;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--black);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.75; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      background: var(--white);
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gray-600);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 36px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+    h1 {
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 800;
+      letter-spacing: -2.5px;
+      line-height: 1.05;
+      color: var(--black);
+      max-width: 820px;
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--gray-600);
+      max-width: 500px;
+      margin-bottom: 44px;
+      font-weight: 400;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-primary {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--black);
+      border: none;
+      padding: 14px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: var(--shadow-md);
+    }
+    .btn-primary:hover {
+      opacity: 0.82;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+    .btn-secondary {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--gray-600);
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      padding: 14px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-secondary:hover { background: var(--gray-100); color: var(--black); }
+
+    .hero-caption {
+      margin-top: 28px;
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ── Sections shared ── */
+    section { padding: 100px 24px; }
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      text-align: center;
+      color: var(--black);
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 17px;
+      color: var(--gray-600);
+      text-align: center;
+      max-width: 480px;
+      margin: 0 auto 60px;
+    }
+    .container { max-width: 1040px; margin: 0 auto; }
+
+    /* ── Products ── */
+    #products { background: var(--gray-100); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+    }
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+    .card-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .card-price {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+    .card-price span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--gray-400);
+      letter-spacing: 0;
+    }
+    .card-features {
+      list-style: none;
+      margin: 24px 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card-features li {
+      font-size: 14px;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-features li::before {
+      content: "";
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--black);
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 5l2 2 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .card-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s, opacity 0.15s;
+    }
+    .card-btn-dark {
+      background: var(--black);
+      color: var(--white);
+      border: none;
+    }
+    .card-btn-dark:hover { opacity: 0.75; }
+    .card-btn-outline {
+      background: transparent;
+      color: var(--black);
+      border: 1.5px solid var(--gray-200);
+    }
+    .card-btn-outline:hover { background: var(--gray-100); }
+
+    .card-badge {
+      position: absolute;
+      top: 20px; right: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* ── How it works ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 32px;
+    }
+    .step {
+      padding: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .step:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .step-num {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--gray-400);
+      margin-bottom: 16px;
+    }
+    .step-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+    }
+    .step-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.65;
+    }
+    .step-icon {
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Waitlist ── */
+    #waitlist { background: var(--black); }
+    #waitlist .section-label { color: #555; }
+    #waitlist .section-title { color: var(--white); }
+    #waitlist .section-sub { color: #888; }
+    .waitlist-form {
+      display: flex;
+      gap: 10px;
+      max-width: 480px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    .waitlist-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 18px;
+      font-size: 15px;
+      border: 1.5px solid #2a2a2a;
+      border-radius: 10px;
+      background: #111;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .waitlist-input::placeholder { color: #555; }
+    .waitlist-input:focus { border-color: #444; }
+    .waitlist-submit {
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 24px;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .waitlist-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+    .waitlist-note {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #555;
+    }
+    .waitlist-success {
+      display: none;
+      text-align: center;
+      color: #22c55e;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid #1a1a1a;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+    .footer-copy {
+      font-size: 13px;
+      color: #555;
+    }
+
+    /* ── Scroll animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s cubic-bezier(.22,.68,0,1.2), transform 0.55s cubic-bezier(.22,.68,0,1.2);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: 0.08s; }
+    .fade-up:nth-child(3) { transition-delay: 0.16s; }
+    .fade-up:nth-child(4) { transition-delay: 0.24s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      section { padding: 72px 20px; }
+      footer { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">Uldrix</a>
+    <a href="#waitlist" class="nav-cta">Get Early Access</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Now accepting early access
+    </div>
+    <h1>The Last AI Voice<br>You'll Ever Need</h1>
+    <p class="hero-sub">Uldrix brings natural, intelligent voice AI to individuals and businesses — set up in minutes, live 24/7.</p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Get Early Access</a>
+      <a href="#products" class="btn-secondary">See Plans</a>
+    </div>
+    <p class="hero-caption">No credit card required &nbsp;·&nbsp; Free during beta</p>
+  </section>
+
+  <!-- Products -->
+  <section id="products">
+    <div class="container">
+      <p class="section-label">Plans</p>
+      <h2 class="section-title">Built for everyone</h2>
+      <p class="section-sub">Whether you need a personal assistant or a business receptionist, Uldrix has you covered.</p>
+      <div class="cards">
+
+        <div class="card fade-up">
+          <p class="card-tag">Personal</p>
+          <h3 class="card-name">Uldrix Personal</h3>
+          <p class="card-desc">Your own AI voice assistant — smarter, faster, and always available.</p>
+          <div class="card-price">$9.99 <span>/ month</span></div>
+          <ul class="card-features">
+            <li>Natural voice conversations</li>
+            <li>Reminders, tasks & calendar sync</li>
+            <li>Personalized to your preferences</li>
+            <li>Works on any device</li>
+          </ul>
+          <a href="#waitlist" class="card-btn card-btn-outline">Join Waitlist</a>
+        </div>
+
+        <div class="card fade-up">
+          <span class="card-badge">Popular</span>
+          <p class="card-tag">Business</p>
+          <h3 class="card-name">Uldrix Business</h3>
+          <p class="card-desc">A 24/7 AI receptionist that handles calls, books appointments, and never sleeps.</p>
+          <div class="card-price">$79 <span>/ month</span></div>
+          <ul class="card-features">
+            <li>24/7 live call handling</li>
+            <li>Appointment booking & routing</li>
+            <li>Custom business voice & persona</li>
+            <li>CRM & calendar integrations</li>
+            <li>Analytics dashboard</li>
+          </ul>
+          <a href="#waitlist" class="card-btn card-btn-dark">Get Early Access</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how">
+    <div class="container">
+      <p class="section-label">Process</p>
+      <h2 class="section-title">Up and running in minutes</h2>
+      <p class="section-sub">No technical setup. No engineers required. Just pick your plan and go.</p>
+      <div class="steps">
+
+        <div class="step fade-up">
+          <div class="step-icon">◈</div>
+          <p class="step-num">Step 01</p>
+          <h3 class="step-title">Choose your plan</h3>
+          <p class="step-desc">Select Personal for yourself or Business for your company. Cancel anytime, no commitment.</p>
+        </div>
+
+        <div class="step fade-up">
+          <div class="step-icon">⚙</div>
+          <p class="step-num">Step 02</p>
+          <h3 class="step-title">Set up in minutes</h3>
+          <p class="step-desc">Answer a few questions about your needs, connect your calendar, and customize your voice.</p>
+        </div>
+
+        <div class="step fade-up">
+          <div class="step-icon">◉</div>
+          <p class="step-num">Step 03</p>
+          <h3 class="step-title">Your AI goes live</h3>
+          <p class="step-desc">Uldrix is active immediately — handling calls, setting reminders, and working around the clock.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section id="waitlist">
+    <div class="container">
+      <p class="section-label">Early Access</p>
+      <h2 class="section-title">Be first in line</h2>
+      <p class="section-sub">Join the waitlist and get free access during our beta launch.</p>
+      <form class="waitlist-form" id="waitlistForm" onsubmit="handleSubmit(event)">
+        <input
+          type="email"
+          class="waitlist-input"
+          placeholder="you@example.com"
+          required
+          id="emailInput"
+        />
+        <button type="submit" class="waitlist-submit">Join Waitlist</button>
+      </form>
+      <p class="waitlist-note">Free during beta &nbsp;·&nbsp; No spam, ever</p>
+      <p class="waitlist-success" id="successMsg">You're on the list — we'll be in touch soon.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-logo">Uldrix</span>
+    <span class="footer-copy">Uldrix © 2026</span>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Waitlist form
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = document.getElementById('waitlistForm');
+      const msg = document.getElementById('successMsg');
+      form.style.display = 'none';
+      msg.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
