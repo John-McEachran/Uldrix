@@ -567,6 +567,13 @@
       font-weight: 600;
       margin-top: 20px;
     }
+    .waitlist-hint {
+      display: none;
+      text-align: center;
+      color: #555;
+      font-size: 12px;
+      margin-top: 8px;
+    }
 
     /* ── Footer ── */
     footer {
@@ -732,6 +739,7 @@
       </form>
       <p class="waitlist-note">Free during beta &nbsp;·&nbsp; No spam, ever</p>
       <p class="waitlist-success" id="successMsg">You're on the list!</p>
+      <p class="waitlist-hint" id="successHint">Check your promotions or spam folder for your welcome email.</p>
     </div>
   </section>
 
@@ -847,6 +855,7 @@
         if (data.success) {
           document.getElementById('waitlistForm').style.display = 'none';
           document.getElementById('successMsg').style.display = 'block';
+          document.getElementById('successHint').style.display = 'block';
         } else {
           throw new Error(data.error || 'Something went wrong.');
         }
