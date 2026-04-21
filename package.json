@@ -1,0 +1,25 @@
+{
+  "name": "uldrix",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/John-McEachran/uldrix.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/John-McEachran/uldrix/issues"
+  },
+  "homepage": "https://github.com/John-McEachran/uldrix#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "resend": "^6.12.2"
+  }
+}
