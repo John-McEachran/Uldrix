@@ -777,7 +777,8 @@
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
       toggle.textContent = dark ? '☀️' : '🌙';
     };
-    let dark = localStorage.getItem('theme') === 'dark';
+    const stored = localStorage.getItem('theme');
+    let dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
     apply(dark);
     toggle.addEventListener('click', () => { dark = !dark; localStorage.setItem('theme', dark ? 'dark' : 'light'); apply(dark); });
 
