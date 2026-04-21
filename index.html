@@ -151,11 +151,11 @@
     }
     .btn-secondary:hover { background: var(--gray-100); color: var(--black); }
 
-    .btn-atlas {
-      display: inline-flex;
-      align-items: center;
+    elevenlabs-convai {
+      display: inline-flex !important;
+      position: static !important;
+      align-items: center !important;
       gap: 8px;
-      margin-top: 16px;
       font-size: 14px;
       font-weight: 600;
       color: var(--black);
@@ -164,27 +164,33 @@
       padding: 11px 22px;
       border-radius: 10px;
       cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
       box-shadow: var(--shadow-sm);
+      transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+      width: auto !important;
+      height: auto !important;
+      bottom: unset !important;
+      right: unset !important;
+      z-index: auto !important;
     }
-    .btn-atlas:hover {
+    elevenlabs-convai:hover {
       background: var(--gray-100);
       box-shadow: var(--shadow-md);
       transform: translateY(-1px);
     }
-    .btn-atlas-dot {
+    elevenlabs-convai::before {
+      content: "";
+      display: inline-block;
       width: 7px; height: 7px;
       border-radius: 50%;
       background: #22c55e;
       box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
       50%       { box-shadow: 0 0 0 5px rgba(34,197,94,0.12); }
     }
-    elevenlabs-convai { display: none; }
 
     .hero-caption {
       margin-top: 28px;
@@ -491,12 +497,8 @@
     <div class="hero-actions">
       <a href="#waitlist" class="btn-primary">Get Early Access</a>
       <a href="#products" class="btn-secondary">See Plans</a>
+      <elevenlabs-convai agent-id="agent_1701kppps48seb6t3e0dyjzm7hd4"></elevenlabs-convai>
     </div>
-    <button class="btn-atlas" onclick="document.querySelector('elevenlabs-convai').shadowRoot?.querySelector('button')?.click() || document.querySelector('elevenlabs-convai').click()">
-      <span class="btn-atlas-dot"></span>
-      Talk to Atlas
-    </button>
-    <elevenlabs-convai agent-id="agent_1701kppps48seb6t3e0dyjzm7hd4"></elevenlabs-convai>
     <p class="hero-caption">No credit card required &nbsp;·&nbsp; Free during beta</p>
   </section>
 
@@ -603,6 +605,32 @@
   </footer>
 
   <script>
+    // Strip ElevenLabs widget's internal floating chrome once shadow DOM is ready
+    function injectAtlasStyles() {
+      const el = document.querySelector('elevenlabs-convai');
+      if (!el) return;
+      const inject = () => {
+        if (!el.shadowRoot) { setTimeout(inject, 100); return; }
+        const s = document.createElement('style');
+        s.textContent = `
+          :host { all: unset !important; display: inline-flex !important; align-items: center !important; cursor: pointer !important; }
+          * { position: static !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; border: none !important; }
+          button, [role="button"] { display: contents !important; font: inherit !important; color: inherit !important; cursor: pointer !important; }
+        `;
+        el.shadowRoot.appendChild(s);
+        // Inject "Talk to Atlas" label text if shadow root has no visible text node
+        if (!el.shadowRoot.querySelector('.atlas-label')) {
+          const label = document.createElement('span');
+          label.className = 'atlas-label';
+          label.style.cssText = 'font-size:14px;font-weight:600;color:#0a0a0a;font-family:inherit;pointer-events:none;';
+          label.textContent = 'Talk to Atlas';
+          el.shadowRoot.appendChild(label);
+        }
+      };
+      inject();
+    }
+    document.addEventListener('DOMContentLoaded', injectAtlasStyles);
+
     // Scroll animations
     const observer = new IntersectionObserver(
       (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
