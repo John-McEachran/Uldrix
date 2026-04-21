@@ -59,6 +59,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'transcript is required' });
   }
 
+  const transcriptText = transcript
+    .map(t => `${t.role === 'agent' ? 'Agent' : 'Caller'}: ${t.message || ''}`)
+    .filter(line => !line.endsWith(': '))
+    .join('\n');
+
   let message;
   try {
     message = await anthropic.messages.create({
@@ -77,7 +82,7 @@ Action Items:
 - [item 2]
 
 Transcript:
-${transcript}`,
+${transcriptText}`,
         },
       ],
     });
