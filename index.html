@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Uldrix — The Last AI Voice You'll Ever Need</title>
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -150,6 +151,71 @@
       transition: background 0.15s, color 0.15s;
     }
     .btn-secondary:hover { background: var(--gray-100); color: var(--black); }
+
+    /* ── Try Free modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 480px;
+      padding: 36px 32px 32px;
+      position: relative;
+      animation: modalIn 0.2s cubic-bezier(.22,.68,0,1.2);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      color: var(--gray-600);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .modal-close:hover { background: var(--gray-100); color: var(--black); }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .modal-sub {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 28px;
+    }
+    .modal-widget {
+      display: flex;
+      justify-content: center;
+      min-height: 120px;
+      align-items: center;
+    }
+    .modal-widget elevenlabs-convai {
+      display: block;
+    }
 
     .hero-caption {
       margin-top: 28px;
@@ -456,7 +522,7 @@
     <div class="hero-actions">
       <a href="#waitlist" class="btn-primary">Get Early Access</a>
       <a href="#products" class="btn-secondary">See Plans</a>
-      <a href="https://elevenlabs.io/app/talk-to?agent_id=agent_1701kppps48seb6t3e0dyjzm7hd4&branch_id=agtbrch_4601kppps594fb6ssr3qcqbma3ze" target="_blank" rel="noopener noreferrer" class="btn-secondary">Try Uldrix Free →</a>
+      <button class="btn-secondary" onclick="openAtlasModal()">Try Uldrix Free →</button>
     </div>
     <p class="hero-caption">No credit card required &nbsp;·&nbsp; Free during beta</p>
   </section>
@@ -563,6 +629,16 @@
     <span class="footer-copy">Uldrix © 2026</span>
   </footer>
 
+  <!-- Atlas modal -->
+  <div class="modal-overlay" id="atlasModal" onclick="handleModalClick(event)">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAtlasModal()" aria-label="Close">✕</button>
+      <p class="modal-title">Talk to Atlas</p>
+      <p class="modal-sub">Your Uldrix AI assistant is ready. Say hello.</p>
+      <div class="modal-widget" id="atlasWidgetSlot"></div>
+    </div>
+  </div>
+
   <script>
     // Scroll animations
     const observer = new IntersectionObserver(
@@ -570,6 +646,28 @@
       { threshold: 0.12 }
     );
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Atlas modal
+    function openAtlasModal() {
+      const modal = document.getElementById('atlasModal');
+      const slot = document.getElementById('atlasWidgetSlot');
+      // Inject widget only on first open
+      if (!slot.querySelector('elevenlabs-convai')) {
+        const widget = document.createElement('elevenlabs-convai');
+        widget.setAttribute('agent-id', 'agent_1701kppps48seb6t3e0dyjzm7hd4');
+        slot.appendChild(widget);
+      }
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAtlasModal() {
+      document.getElementById('atlasModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('atlasModal')) closeAtlasModal();
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAtlasModal(); });
 
     // Waitlist form — Vercel serverless
     async function handleSubmit(e) {
