@@ -47,8 +47,14 @@ export default async function handler(req, res) {
 
   // const body = JSON.parse(rawBody.toString('utf8'));
   console.log('ElevenLabs webhook body:', JSON.stringify(req.body, null, 2));
+  console.log('ElevenLabs webhook data:', JSON.stringify(req.body.data, null, 2));
 
-  const { transcript } = req.body;
+  const data = req.body.data;
+  if (!data) {
+    return res.status(400).json({ error: 'data is required' });
+  }
+
+  const transcript = data.transcript;
   if (!transcript) {
     return res.status(400).json({ error: 'transcript is required' });
   }
