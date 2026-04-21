@@ -46,18 +46,22 @@ export default async function handler(req, res) {
   // }
 
   // const body = JSON.parse(rawBody.toString('utf8'));
+  console.log('ElevenLabs webhook body:', JSON.stringify(req.body, null, 2));
+
   const { transcript } = req.body;
   if (!transcript) {
     return res.status(400).json({ error: 'transcript is required' });
   }
 
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `Extract the following from this call transcript and respond in exactly this format:
+  let message;
+  try {
+    message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: `Extract the following from this call transcript and respond in exactly this format:
 
 Caller Name: [name or "Unknown"]
 Phone Number: [phone or "Not provided"]
@@ -68,9 +72,13 @@ Action Items:
 
 Transcript:
 ${transcript}`,
-      },
-    ],
-  });
+        },
+      ],
+    });
+  } catch (err) {
+    console.error('Anthropic error:', err);
+    return res.status(500).json({ error: 'Failed to summarize transcript' });
+  }
 
   const summary = message.content[0].text;
 
@@ -81,17 +89,22 @@ ${transcript}`,
     timeZoneName: 'short',
   });
 
-  await resend.emails.send({
-    from: 'Uldrix <noreply@uldrix.com>',
-    to: 'john@uldrix.com',
-    subject: `New Call Summary — ${dateStr}`,
-    text: `Call Summary\n${dateStr}\n\n${summary}`,
-    html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  try {
+    await resend.emails.send({
+      from: 'Uldrix <noreply@uldrix.com>',
+      to: 'john@uldrix.com',
+      subject: `New Call Summary — ${dateStr}`,
+      text: `Call Summary\n${dateStr}\n\n${summary}`,
+      html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
   <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Call Summary</h2>
   <p style="color:#888;font-size:14px;margin-bottom:24px">${dateStr}</p>
   <pre style="font-family:sans-serif;font-size:15px;line-height:1.7;white-space:pre-wrap">${summary}</pre>
 </div>`,
-  });
+    });
+  } catch (err) {
+    console.error('Resend error:', err);
+    return res.status(500).json({ error: 'Failed to send email' });
+  }
 
   return res.status(200).json({ success: true });
 }
