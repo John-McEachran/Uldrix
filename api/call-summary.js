@@ -1,9 +1,11 @@
 // import crypto from 'crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { Resend } from 'resend';
+import twilio from 'twilio';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const resend = new Resend(process.env.RESEND_API_KEY);
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // // Disable Vercel's body parser so we can read the raw bytes for signature verification
 // export const config = { api: { bodyParser: false } };
@@ -115,6 +117,21 @@ ${transcriptText}`,
   } catch (err) {
     console.error('Resend error:', err);
     return res.status(500).json({ error: 'Failed to send email' });
+  }
+
+  const callerNumber = req.body.data?.metadata?.phone_call?.external_number;
+  if (callerNumber) {
+    try {
+      await twilioClient.messages.create({
+        body: 'Hi, thanks for calling! We received your message and will follow up with you shortly. - Uldrix',
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: callerNumber,
+      });
+    } catch (err) {
+      console.error('Twilio error:', err);
+    }
+  } else {
+    console.log('No caller phone number found, skipping SMS');
   }
 
   return res.status(200).json({ success: true });
