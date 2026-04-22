@@ -36,5 +36,5 @@ export default async function handler(req, res) {
   await redis.set(`client:${client_id}:tokens`, JSON.stringify(tokens));
   console.log(`Stored tokens for client: ${client_id}`);
 
-  return res.redirect('/connected.html');
+  return res.redirect('/connected');
 }
