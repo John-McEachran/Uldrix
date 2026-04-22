@@ -20,6 +20,8 @@
   "homepage": "https://github.com/John-McEachran/uldrix#readme",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
+    "@upstash/redis": "^1.37.0",
+    "googleapis": "^171.4.0",
     "resend": "^6.12.2",
     "twilio": "^6.0.0"
   }
