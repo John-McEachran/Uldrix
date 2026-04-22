@@ -56,6 +56,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'data is required' });
   }
 
+  if (data.metadata?.conversation_initiation_source !== 'twilio') {
+    console.log('Not a Twilio call, skipping. Source:', data.metadata?.conversation_initiation_source);
+    return res.status(200).json({ success: true });
+  }
+
   const transcript = data.transcript;
   if (!transcript) {
     return res.status(400).json({ error: 'transcript is required' });
