@@ -74,7 +74,7 @@ export default async function handler(req, res) {
   let message;
   try {
     message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       messages: [
         {
@@ -127,13 +127,15 @@ ${transcriptText}`,
   const callerNumber = req.body.data?.metadata?.phone_call?.external_number;
   if (callerNumber) {
     try {
+      console.log('Attempting SMS to: ' + callerNumber);
       await twilioClient.messages.create({
         body: 'Hi, thanks for calling! We received your message and will follow up with you shortly. - Uldrix',
         from: process.env.TWILIO_PHONE_NUMBER,
         to: callerNumber,
       });
+      console.log('SMS sent successfully');
     } catch (err) {
-      console.error('Twilio error:', err);
+      console.error('Twilio error:', err.message, err.stack);
     }
   } else {
     console.log('No caller phone number found, skipping SMS');
